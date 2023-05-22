@@ -47,7 +47,7 @@ void MyVector<T>::copyFrom(const MyVector<T>& other)
 	_capacity = other._capacity;
 	_data = new T[_capacity];
 	for (int i = 0; i < _size; i++)
-		_data = other._data[i];
+		_data[i] = other._data[i];
 }
 
 template <typename T>
@@ -77,7 +77,6 @@ void MyVector<T>::resize(size_t newCap)
 		temp[i] = std::move(_data[i]);
 	delete[] _data;
 	_data = temp;
-	std::cout << "Success" << std::endl;
 }
 
 template <typename T>

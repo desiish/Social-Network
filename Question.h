@@ -3,7 +3,7 @@
 class Question
 {
 	MyString _title;
-	const User* _author = nullptr;
+	unsigned _idxOfAuthor;
 	MyString _content;
 	unsigned _id;
 	MyVector<Comment> _comments;
@@ -12,15 +12,18 @@ class Question
 
 public:
 	Question() = default;
-	Question(const MyString& title, const User* author, const MyString& content, unsigned id);
+	Question(const MyString& title, unsigned idxOfAuthor, const MyString& content, unsigned id);
 	const MyString& getTitle() const;
 	const MyString& getContent() const;
 	unsigned getId() const;
-	void addComment(const MyString& content, const User* author);
-	void addReplyToComment(unsigned id, const MyString& content, const User* author);
+	void addComment(const MyString& content, unsigned idxOfAuthor);
+	void addReplyToComment(unsigned id, const MyString& content, unsigned idxOfAuthor);
 	void printComments() const;
-	void addUpVote(unsigned id, const User* author);
-	void addDownVote(unsigned id, const User* author);
+	void addUpVote(unsigned id, unsigned idxOfAuthor);
+	void addDownVote(unsigned id, unsigned idxOfAuthor);
 	void printQuestion() const;
+
+	void writeToFile(std::ofstream& ofs) const;
+	void readFromFiLe(std::ifstream& ifs);
 };
 

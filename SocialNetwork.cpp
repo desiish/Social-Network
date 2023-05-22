@@ -39,8 +39,8 @@ void SocialNetwork::signup(const MyString& fn, const MyString& ln, const MyStrin
 {
 	srand(time(NULL));
 	unsigned id = rand();
-	std::cout << id << std::endl;
-	_users.push_back(User(fn, ln, pass, id));
+	int index = _users.size();
+	_users.push_back(User(fn, ln, pass, id, index));
 }
 void SocialNetwork::login(const MyString& fn, const MyString& pass)
 {
@@ -62,7 +62,7 @@ void SocialNetwork::create(const MyString& title, const MyString& desc)
 
 	srand(time(NULL));
 	unsigned id = rand();
-	_topics.push_back(Topic(title, _currentU, desc, id));
+	_topics.push_back(Topic(title, _currentU->getIdxInSystem(), desc, id));
 }
 
 void SocialNetwork::search(const MyString& text) const
@@ -122,9 +122,9 @@ void SocialNetwork::post()
 
 	MyString title, content;
 	std::cin >> title >> content;
-	_currentT->addQuestion(_currentU, title, content);
+	_currentT->addQuestion(_currentU->getIdxInSystem(), title, content);
 }
-void SocialNetwork::p_open(const MyString& title) const
+void SocialNetwork::p_open(const MyString& title)
 {
 	if (_currentU == nullptr)
 		throw "Not logged in!";
@@ -132,10 +132,10 @@ void SocialNetwork::p_open(const MyString& title) const
 	if (_currentT == nullptr)
 		throw "No topic chosen!";
 
-	std::cout << "Q: " << _currentT->getCurrentQ(title).getContent();
-	std::cout << " {id:" << _currentT->getCurrentQ().getId() << "} " << std::endl;
+	_currentT->getCurrentQ(title, _currentQ);
+	std::cout << "Q: " << _currentQ->getContent() << " {id:" << _currentQ->getId() << "} " << std::endl;
 }
-void SocialNetwork::p_open(unsigned id) const
+void SocialNetwork::p_open(unsigned id)
 {
 	if (_currentU == nullptr)
 		throw "Not logged in!";
@@ -143,8 +143,8 @@ void SocialNetwork::p_open(unsigned id) const
 	if (_currentT == nullptr)
 		throw "No topic chosen!";
 
-	std::cout << "Q: " << _currentT->getCurrentQ(id).getContent();
-	std::cout << " {id:" << _currentT->getCurrentQ().getId() << "} " << std::endl;
+	_currentT->getCurrentQ(id, _currentQ);
+	std::cout << "Q: " << _currentQ->getContent() << " {id:" << _currentQ->getId() << "} " << std::endl;
 }
 void SocialNetwork::comment()
 {
@@ -154,9 +154,12 @@ void SocialNetwork::comment()
 	if (_currentT == nullptr)
 		throw "No topic chosen!";
 
+	if (_currentQ == nullptr)
+	throw "No question chosen!";
+
 	MyString content;
 	std::cin >> content;
-	_currentT->addCommentToCurrentQ(content, _currentU);
+	_currentQ->addComment(content, _currentU->getIdxInSystem());
 }
 void SocialNetwork::comments() const
 {
@@ -166,7 +169,7 @@ void SocialNetwork::comments() const
 	if (_currentT == nullptr)
 		throw "No topic chosen!";
 
-	_currentT->getCurrentQ().printComments();
+	_currentQ->printComments();
 }
 void SocialNetwork::reply()
 {
@@ -176,33 +179,38 @@ void SocialNetwork::reply()
 	if (_currentT == nullptr)
 		throw "No topic chosen!";
 
+	if (_currentQ == nullptr)
+	throw "No question chosen!";
+
 	unsigned id;
 	std::cin >> id;
 	MyString content;
 	std::cin >> content;
-	_currentT->addReplyToCurrentQ(id, content, _currentU);
+	_currentQ->addReplyToComment(id, content, _currentU->getIdxInSystem());
 }
 void SocialNetwork::upvote(unsigned id)
 {
-	_currentT->addUpvoteToCommentOnQ(id, _currentU);
+	_currentQ->addUpVote(id, _currentU->getIdxInSystem());
+	_currentU->setPoints(_currentU->getPoints() + 1);
 }
 void SocialNetwork::downvote(unsigned id)
 {
-	_currentT->addDownvoteToCommentOnQ(id, _currentU);
+	_currentQ->addDownVote(id, _currentU->getIdxInSystem());
+	_currentU->setPoints(_currentU->getPoints() + 1);
 }
-void SocialNetwork::p_close() const
+void SocialNetwork::p_close()
 {
-	if (&_currentT->getCurrentQ() == nullptr)
+	if (_currentQ == nullptr)
 		throw "No post is currently opened";
 
-	std::cout << "You just left " << _currentT->getCurrentQ().getTitle() << std::endl;
-	_currentT->closePost();
+	std::cout << "You just left " << _currentQ->getTitle() << std::endl;
+	_currentQ = nullptr;
 }
 void SocialNetwork::quit()
 {
 	if (_currentT == nullptr)
 		throw "No topic is currently chosen";
-	if (&_currentT->getCurrentQ() != nullptr)
+	if (_currentQ != nullptr)
 		throw "A post is still opened for reading";
 
 	std::cout << "You just left " << _currentT->getTitle() << std::endl;
@@ -210,11 +218,11 @@ void SocialNetwork::quit()
 }
 void SocialNetwork::exit()
 {
-	_currentT->closePost();
+	_currentQ = nullptr;
 	_currentT = nullptr;
 	_currentU = nullptr;
 
-	//serialize
+	writeToFile();
 }
 
 void SocialNetwork::whoami() const
@@ -230,5 +238,52 @@ void SocialNetwork::about(unsigned id) const
 	if (idx == -1)
 		throw std::invalid_argument("No such topic exists");
 
-	_currentT->printTopicData();
+	_currentT->printTopicData(_currentU);
+}
+
+void SocialNetwork::writeToFile() const
+{
+	std::ofstream ofs("SN.dat", std::ios::out | std::ios::binary);
+	if (!ofs.is_open())
+		throw "Error";
+
+	size_t countOfUsers = _users.size();
+	ofs.write((const char*)&countOfUsers, sizeof(size_t));
+	for (int i = 0; i < countOfUsers; i++)
+		_users[i].writeToFile(ofs);
+	size_t countOfTopics = _users.size();
+	ofs.write((const char*)&countOfTopics, sizeof(size_t));
+	for (int i = 0; i < countOfTopics; i++)
+		_topics[i].writeToFile(ofs);
+
+	ofs.clear();
+	ofs.close();
+}
+void SocialNetwork::readFromFiLe()
+{
+	std::ifstream ifs("SN.dat", std::ios::in | std::ios::binary);
+	if (!ifs.is_open())
+		throw "Error";
+
+	size_t countOfUsers;
+	ifs.read((char*)&countOfUsers, sizeof(size_t));
+	std::cout << countOfUsers << std::endl;
+	for (int i = 0; i < countOfUsers; i++)
+	{
+		User read;
+		read.readFromFiLe(ifs);
+		_users.push_back(read);
+	}
+	size_t countOfTopics;
+	ifs.read((char*)&countOfTopics, sizeof(size_t));
+	std::cout << countOfTopics << std::endl;
+	for (int i = 0; i < countOfTopics; i++)
+	{
+		Topic readT;
+		readT.readFromFiLe(ifs);
+		_topics.push_back(readT);
+	}
+
+	ifs.clear();
+	ifs.close();
 }

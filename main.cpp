@@ -25,6 +25,7 @@ unsigned getNumFromStr(const MyString& str)
 int main()
 {
 	SocialNetwork s;
+	s.readFromFiLe();
 	MyString command;
 	while (1)
 	{

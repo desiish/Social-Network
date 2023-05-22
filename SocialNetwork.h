@@ -7,6 +7,7 @@ class SocialNetwork
 	MyVector<Topic> _topics;
 	User* _currentU = nullptr;
 	Topic* _currentT = nullptr;
+	Question* _currentQ = nullptr;
 
 	int getUserIdx(const MyString& fn, const MyString& pass) const;
 	int getTopicIdx(const MyString& title) const;
@@ -26,20 +27,22 @@ public:
 	void list() const;
 
 	void post();
-	void p_open(const MyString& title) const;
-	void p_open(unsigned id) const;
+	void p_open(const MyString& title);
+	void p_open(unsigned id);
 	void comment();
 	void comments() const;
 	void reply();
 	void upvote(unsigned id);
 	void downvote(unsigned id);
 
-	void p_close() const;
+	void p_close();
 	void quit();
 	void exit();
 
 	void whoami() const;
 	void about(unsigned id) const;
 
+	void writeToFile() const;
+	void readFromFiLe();
 };
 

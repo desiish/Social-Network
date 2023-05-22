@@ -22,17 +22,17 @@ int Topic::getQuestionIdx(unsigned id) const
 	}
 	return -1;
 }
-Topic::Topic(const MyString& title, const User* author, const MyString& content, unsigned id):
+Topic::Topic(const MyString& title, unsigned idxOfAuthor, const MyString& content, unsigned id):
 	_title(title), _content(content)
 {
 	_id = id;
-	_author = author;
+	_idxOfAuthor = idxOfAuthor;
 }
-void Topic::addQuestion(const User* author, const MyString& title, const MyString& content)
+void Topic::addQuestion(unsigned idxOfAuthor, const MyString& title, const MyString& content)
 {
 	srand(time(NULL));
 	unsigned id = rand();
-	_questions.push_back(Question(title, author, content, id));
+	_questions.push_back(Question(title, idxOfAuthor, content, id));
 }
 bool Topic::containsText(const MyString& text) const
 {
@@ -59,66 +59,59 @@ unsigned Topic::getId() const
 {
 	return _id;
 }
-void Topic::printTopicData() const
+void Topic::printTopicData(const User* author) const
 {
 	std::cout << "Name: " << _title << std::endl;
 	std::cout << "Description: " << _content << std::endl;
-	std::cout << "Created by: " << _author->getFName() << " " << _author->getLName() << " { id:" << _author->getId() << "} " << std::endl;
+	std::cout << "Created by: " << author->getFName() << " " << author->getLName() << " { id:" << author->getId() << "} " << std::endl;
 	std::cout << "Questions asked: " << _questions.size() << std::endl;
 }
-const Question& Topic::getCurrentQ(const MyString& title) 
+void Topic::getCurrentQ(const MyString& title, Question*& currentQ)
 {
 	int idx = getQuestionIdx(title);
 	if (idx == -1)
 		throw std::invalid_argument("No such question exists");
 
-	std::cout << "Index: " << idx << std::endl;
-	_currentQ = &_questions[idx];
-	return *_currentQ;
+	currentQ = &_questions[idx];
 }
-const Question& Topic::getCurrentQ(unsigned id) 
+void Topic::getCurrentQ(unsigned id, Question*& currentQ)
 {
 	int idx = getQuestionIdx(id);
 	if (idx == -1)
 		throw std::invalid_argument("No such question exists");
-	std::cout << "Index: " << idx<<std::endl;
-	_currentQ = &_questions[idx];
-	return *_currentQ;
-}
-const Question& Topic::getCurrentQ()
-{
-	return *_currentQ;
-}
-void Topic::addCommentToCurrentQ(const MyString& content, const User* author)
-{
-	if (_currentQ == nullptr)
-		throw "No question chosen!";
 
-	_currentQ->addComment(content, author);
-}
-void Topic::addReplyToCurrentQ(unsigned id, const MyString& content, const User* author)
-{
-	if (_currentQ == nullptr)
-		throw "No question chosen!";
-
-	std::cout << id << " " << content << std::endl;
-	_currentQ->addReplyToComment(id, content, author);
-}
-void Topic::addUpvoteToCommentOnQ(unsigned id, const User* author)
-{
-	_currentQ->addUpVote(id, author);
-}
-void Topic::addDownvoteToCommentOnQ(unsigned id, const User* author)
-{
-	_currentQ->addDownVote(id, author);
-}
-void Topic::closePost()
-{
-	_currentQ = nullptr;
+	currentQ = &_questions[idx];
 }
 void Topic::printQuestions() const
 {
 	size_t count = _questions.size();
 	for (int i = 0; i < count; i++)
 		_questions[i].printQuestion();
+}
+
+void Topic::writeToFile(std::ofstream& ofs) const
+{
+	writeStringToFile(ofs, _title);
+	ofs.write((const char*)&_idxOfAuthor, sizeof(unsigned));
+	writeStringToFile(ofs, _content);
+	ofs.write((const char*)&_id, sizeof(unsigned));
+	size_t countOfQs = _questions.size();
+	ofs.write((const char*)&countOfQs, sizeof(size_t));
+	for (int i = 0; i < countOfQs; i++)
+		_questions[i].writeToFile(ofs);
+}
+void Topic::readFromFiLe(std::ifstream& ifs)
+{
+	_title = readStringFromFile(ifs);
+	ifs.read((char*)&_idxOfAuthor, sizeof(unsigned));
+	_content = readStringFromFile(ifs);
+	ifs.read((char*)&_id, sizeof(unsigned));
+	size_t countOfQs;
+	ifs.read((char*)&countOfQs, sizeof(size_t));
+	for (int i = 0; i < countOfQs; i++)
+	{
+		Question read;
+		read.readFromFiLe(ifs);
+		_questions.push_back(read);
+	}
 }
