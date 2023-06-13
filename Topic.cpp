@@ -44,6 +44,7 @@ bool Topic::containsText(const MyString& text) const
 		if (_title.substr(iter, tLen) == text)
 			return true;
 		iter++;
+		len--;
 	}
 	return false;
 }

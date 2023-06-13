@@ -73,7 +73,7 @@ void Question::addDownVote(unsigned id, unsigned idxOfAuthor)
 }
 void Question::printQuestion() const
 {
-	std::cout << ">>" << _content << " {id:" << _id << "} " << std::endl;
+	std::cout << ">>" << _title << std::endl << _content << std::endl << " {id:" << _id << "} " << std::endl;
 }
 
 void Question::writeToFile(std::ofstream& ofs) const

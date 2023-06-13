@@ -15,7 +15,6 @@ int SocialNetwork::getUserIdx(const MyString& fn, const MyString& pass) const
 }
 int SocialNetwork::getTopicIdx(const MyString& title) const
 {
-	int idx = -1;
 	unsigned tCount = _topics.size();
 	for (int i = 0; i < tCount; i++)
 	{
@@ -26,7 +25,6 @@ int SocialNetwork::getTopicIdx(const MyString& title) const
 }
 int SocialNetwork::getTopicIdx(unsigned id) const
 {
-	int idx = -1;
 	unsigned tCount = _topics.size();
 	for (int i = 0; i < tCount; i++)
 	{
@@ -112,7 +110,7 @@ void SocialNetwork::list() const
 	_currentT->printQuestions();
 }
 
-void SocialNetwork::post()
+void SocialNetwork::post(const MyString& title, const MyString& content)
 {
 	if (_currentU == nullptr)
 		throw "Not logged in!";
@@ -120,8 +118,6 @@ void SocialNetwork::post()
 	if (_currentT == nullptr)
 		throw "No topic chosen!";
 
-	MyString title, content;
-	std::cin >> title >> content;
 	_currentT->addQuestion(_currentU->getIdxInSystem(), title, content);
 }
 void SocialNetwork::p_open(const MyString& title)
@@ -146,7 +142,7 @@ void SocialNetwork::p_open(unsigned id)
 	_currentT->getCurrentQ(id, _currentQ);
 	std::cout << "Q: " << _currentQ->getContent() << " {id:" << _currentQ->getId() << "} " << std::endl;
 }
-void SocialNetwork::comment()
+void SocialNetwork::comment(const MyString& content)
 {
 	if (_currentU == nullptr)
 		throw "Not logged in!";
@@ -157,8 +153,6 @@ void SocialNetwork::comment()
 	if (_currentQ == nullptr)
 	throw "No question chosen!";
 
-	MyString content;
-	std::cin >> content;
 	_currentQ->addComment(content, _currentU->getIdxInSystem());
 }
 void SocialNetwork::comments() const
@@ -171,7 +165,7 @@ void SocialNetwork::comments() const
 
 	_currentQ->printComments();
 }
-void SocialNetwork::reply()
+void SocialNetwork::reply(unsigned id, const MyString& content)
 {
 	if (_currentU == nullptr)
 		throw "Not logged in!";
@@ -182,10 +176,6 @@ void SocialNetwork::reply()
 	if (_currentQ == nullptr)
 	throw "No question chosen!";
 
-	unsigned id;
-	std::cin >> id;
-	MyString content;
-	std::cin >> content;
 	_currentQ->addReplyToComment(id, content, _currentU->getIdxInSystem());
 }
 void SocialNetwork::upvote(unsigned id)
@@ -238,7 +228,7 @@ void SocialNetwork::about(unsigned id) const
 	if (idx == -1)
 		throw std::invalid_argument("No such topic exists");
 
-	_currentT->printTopicData(_currentU);
+	_topics[idx].printTopicData(_currentU);
 }
 
 void SocialNetwork::writeToFile() const
@@ -251,7 +241,7 @@ void SocialNetwork::writeToFile() const
 	ofs.write((const char*)&countOfUsers, sizeof(size_t));
 	for (int i = 0; i < countOfUsers; i++)
 		_users[i].writeToFile(ofs);
-	size_t countOfTopics = _users.size();
+	size_t countOfTopics = _topics.size();
 	ofs.write((const char*)&countOfTopics, sizeof(size_t));
 	for (int i = 0; i < countOfTopics; i++)
 		_topics[i].writeToFile(ofs);

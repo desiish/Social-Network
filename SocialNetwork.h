@@ -26,12 +26,12 @@ public:
 	void open(unsigned idx);
 	void list() const;
 
-	void post();
+	void post(const MyString& title, const MyString& content);
 	void p_open(const MyString& title);
 	void p_open(unsigned id);
-	void comment();
+	void comment(const MyString& content);
 	void comments() const;
-	void reply();
+	void reply(unsigned id, const MyString& content);
 	void upvote(unsigned id);
 	void downvote(unsigned id);
 
