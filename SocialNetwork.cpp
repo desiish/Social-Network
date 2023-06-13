@@ -129,7 +129,7 @@ void SocialNetwork::p_open(const MyString& title)
 		throw "No topic chosen!";
 
 	_currentT->getCurrentQ(title, _currentQ);
-	std::cout << "Q: " << _currentQ->getContent() << " {id:" << _currentQ->getId() << "} " << std::endl;
+	std::cout << "Q: " << _currentQ->getTitle() << " {id:" << _currentQ->getId() << "} " << std::endl;
 }
 void SocialNetwork::p_open(unsigned id)
 {
@@ -140,7 +140,7 @@ void SocialNetwork::p_open(unsigned id)
 		throw "No topic chosen!";
 
 	_currentT->getCurrentQ(id, _currentQ);
-	std::cout << "Q: " << _currentQ->getContent() << " {id:" << _currentQ->getId() << "} " << std::endl;
+	std::cout << "Q: " << _currentQ->getTitle() << " {id:" << _currentQ->getId() << "} " << std::endl;
 }
 void SocialNetwork::comment(const MyString& content)
 {
