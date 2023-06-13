@@ -7,10 +7,12 @@ class User
 	MyString _pass = "N/A";
 	unsigned _id = 0;
 	unsigned _pts = 0;
+	unsigned _idxInSystem = 0;
 
 public:
+
 	User() = default;
-	User(const MyString& fn, const MyString& ln, const MyString& pass, unsigned id);
+	User(const MyString& fn, const MyString& ln, const MyString& pass, unsigned id, unsigned idxInSystem);
 	void setPoints(unsigned points);
 	unsigned getPoints() const;
 	bool isPass(const MyString& pass) const;
@@ -19,4 +21,8 @@ public:
 	const MyString& getFName() const;
 	const MyString& getLName() const;
 	unsigned getId() const;
+	unsigned getIdxInSystem() const;
+
+	void writeToFile(std::ofstream& ofs) const;
+	void readFromFiLe(std::ifstream& ifs);
 };

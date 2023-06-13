@@ -33,8 +33,10 @@ int main()
 		if (command == "signup")
 		{
 			MyString fn, ln, pass;
+			std::cout << "Enter first name, last name and pass: ";
 			std::cin >> fn >> ln >> pass;
 			s.signup(fn, ln, pass);
+			std::cout << "User successfully created!" << std::endl;
 		}
 		else if (command == "whoami")
 		{
@@ -45,6 +47,7 @@ int main()
 			MyString fn, pass;
 			std::cin >> fn >> pass;
 			s.login(fn, pass);
+			std::cout << fn << ", welcome back!" << std::endl;
 		}
 		else if (command == "logout")
 			s.logout();
@@ -53,6 +56,7 @@ int main()
 			MyString title, desc;
 			std::cin >> title >> desc;
 			s.create(title, desc);
+			std::cout << "Topic successfully created!" << std::endl;
 		}
 		else if (command == "search")
 		{
@@ -70,7 +74,10 @@ int main()
 				s.open(input);
 		}
 		else if (command == "post")
+		{
 			s.post();
+			std::cout << "Post successfully created!" << std::endl;
+		}
 		else if (command == "p_open")
 		{
 			MyString input;
@@ -115,6 +122,8 @@ int main()
 		}
 		else if (command == "list")
 			s.list();
+		else
+			std::cout << "Invalid command" << std::endl;
 	}
 }
 

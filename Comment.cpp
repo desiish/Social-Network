@@ -19,7 +19,7 @@ void Comment::printCommentInfo(size_t countOfSpaces) const
 	for (int i = 0; i < countOfSpaces; i++)
 		std::cout << " ";
 	std::cout << ">>" << _content << " {id:" << _id << "} ";
-	if (!_upvotes.empty())
+	if (!_upvotes.empty() || !_downvotes.empty())
 		std::cout << " {upvotes: " << _upvotes.size() << "; downvotes: " << _downvotes.size() << "} ";
 	std::cout << std::endl;
 	if (!_replies.empty())
@@ -76,30 +76,24 @@ void Comment::addOrRemoveDownVote(unsigned idxOfAuthor)
 void Comment::writeToFile(std::ofstream& ofs) const
 {
 	ofs.write((const char*)&_indexOfAuthor, sizeof(unsigned));
-	std::cout << _indexOfAuthor << " ";
 	writeStringToFile(ofs, _content);
-	std::cout << _content << " ";
 	ofs.write((const char*)&_id, sizeof(unsigned));
-	std::cout << _id << " ";
+
 	size_t countOfUpv = _upvotes.size();
 	ofs.write((const char*)&countOfUpv, sizeof(size_t));
-	std::cout << countOfUpv << " ";
+
 	for (int i = 0; i < countOfUpv; i++)
-	{
 		ofs.write((const char*)&_upvotes[i], sizeof(unsigned));
-		std::cout << _upvotes[i] <<" ";
-	}
+
 	size_t countOfDownv = _downvotes.size();
 	ofs.write((const char*)&countOfDownv, sizeof(size_t));
-	std::cout << countOfDownv << " ";
+
 	for (int i = 0; i < countOfDownv; i++)
-	{
 		ofs.write((const char*)&_downvotes[i], sizeof(unsigned));
-		std::cout << _downvotes[i]<<" ";
-	}
+
 	size_t sizeOfRepl = _replies.size();
 	ofs.write((const char*)&sizeOfRepl, sizeof(size_t));
-	std::cout << sizeOfRepl << " ";
+
 	for (int i = 0; i < sizeOfRepl; i++)
 		_replies[i].writeToFile(ofs);
 }
@@ -107,7 +101,6 @@ void Comment::readFromFiLe(std::ifstream& ifs)
 {
 	ifs.read((char*)&_indexOfAuthor, sizeof(unsigned));
 	_content = readStringFromFile(ifs);
-	std::cout << _content << std::endl;
 	ifs.read((char*)&_id, sizeof(_id));
 	size_t countOfUpv;
 	ifs.read((char*)&countOfUpv, sizeof(size_t));
@@ -119,14 +112,13 @@ void Comment::readFromFiLe(std::ifstream& ifs)
 	}
 	size_t countOfDownv;
 	ifs.read((char*)&countOfDownv, sizeof(size_t));
-	for (int i = 0; i < countOfUpv; i++)
+	for (int i = 0; i < countOfDownv; i++)
 	{
 		ifs.read((char*)&read, sizeof(unsigned));
 		_downvotes.push_back(read);
 	}
 	size_t sizeOfRepl;
 	ifs.read((char*)&sizeOfRepl, sizeof(size_t));
-	std::cout << "Count: " << sizeOfRepl << std::endl;
 	for (int i = 0; i < sizeOfRepl; i++)
 	{
 		Comment readC;

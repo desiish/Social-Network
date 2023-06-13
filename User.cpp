@@ -1,7 +1,9 @@
 #include "User.h"
-User::User(const MyString& fn, const MyString& ln, const MyString& pass, unsigned id): _firstName(fn), _lastName(ln), _pass(pass)
+#include "SerializeFunctions.h"
+User::User(const MyString& fn, const MyString& ln, const MyString& pass, unsigned id, unsigned idxInSystem): _firstName(fn), _lastName(ln), _pass(pass)
 {
 	_id = id;
+	_idxInSystem = idxInSystem;
 }
 void User::setPoints(unsigned points)
 {
@@ -34,4 +36,26 @@ const MyString& User::getLName() const
 unsigned User::getId() const
 {
 	return _id;
+}
+unsigned User::getIdxInSystem() const
+{
+	return _idxInSystem;
+}
+void User::writeToFile(std::ofstream& ofs) const
+{
+	writeStringToFile(ofs, _firstName);
+	writeStringToFile(ofs, _lastName);
+	writeStringToFile(ofs, _pass);
+	ofs.write((const char*)&_id, sizeof(unsigned));
+	ofs.write((const char*)&_pts, sizeof(unsigned));
+	ofs.write((const char*)&_idxInSystem, sizeof(unsigned));
+}
+void User::readFromFiLe(std::ifstream& ifs)
+{
+	_firstName = readStringFromFile(ifs);
+	_lastName = readStringFromFile(ifs);
+	_pass = readStringFromFile(ifs);
+	ifs.read((char*)&_id, sizeof(unsigned));
+	ifs.read((char*)&_pts, sizeof(unsigned));
+	ifs.read((char*)&_idxInSystem, sizeof(unsigned));
 }

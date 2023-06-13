@@ -267,7 +267,6 @@ void SocialNetwork::readFromFiLe()
 
 	size_t countOfUsers;
 	ifs.read((char*)&countOfUsers, sizeof(size_t));
-	std::cout << countOfUsers << std::endl;
 	for (int i = 0; i < countOfUsers; i++)
 	{
 		User read;
@@ -276,7 +275,6 @@ void SocialNetwork::readFromFiLe()
 	}
 	size_t countOfTopics;
 	ifs.read((char*)&countOfTopics, sizeof(size_t));
-	std::cout << countOfTopics << std::endl;
 	for (int i = 0; i < countOfTopics; i++)
 	{
 		Topic readT;
