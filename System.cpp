@@ -132,8 +132,7 @@ void run()
 		else if (command == "list")
 			s.list();
 		else {
-			/*throw std::invalid_argument("Invalid command");*/
-			std::cout << "Error" << std::endl;
+			throw std::invalid_argument("Invalid command");
 		}
 	}
 }

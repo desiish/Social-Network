@@ -2,7 +2,17 @@
 #include "System.h"
 int main()
 {
-	run();
+	try {
+		run();
+	}
+	catch (std::invalid_argument& exc)
+	{
+		std::cout << "Invalid command" << std::endl;
+	}
+	catch (...)
+	{
+		std::cout << "Invalid argument given" << std::endl;
+	}
 	return 0;
 }
 
