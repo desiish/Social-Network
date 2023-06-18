@@ -14,7 +14,7 @@ Here is a brief description of the commands that the system supports:<br />
 ->Shows all topics that contain the text in their title;<br />
 + open <title><br />
 ->Opens a topic with the given title;<br />
-+ open <id><br />
++ open <id> <br />
 ->Opens a topic with the given id;<br />
 + post<br />
 ->Creates a post in an open thread;<br />
