@@ -1,7 +1,7 @@
 # Social-Network
 OOP project that I did for my OOP course @ FMI, Sofia University.
 
-A simple implementation of a Socila Networking system.
+A simple implementation of a Social Networking system.
 
 Here is a brief description of the commands that the system supports:<br />
 + signup<br />
