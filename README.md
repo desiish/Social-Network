@@ -1,9 +1,9 @@
 # Social-Network
 OOP project that I did for my OOP course @ FMI, Sofia University.
 
-A simple implementation of a Socila Network system such as Reddit.
+A simple implementation of a Socila Networking system.
 
-A brief description of the commands that the system supports:<br />
+Here is a brief description of the commands that the system supports:<br />
 + signup<br />
 ->Creates a user;<br />
 + login<br />
