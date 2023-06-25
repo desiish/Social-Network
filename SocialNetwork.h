@@ -44,5 +44,7 @@ public:
 
 	void writeToFile() const;
 	void readFromFiLe();
+
+	~SocialNetwork();
 };
 

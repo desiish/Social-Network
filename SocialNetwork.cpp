@@ -44,7 +44,7 @@ void SocialNetwork::login(const MyString& fn, const MyString& pass)
 {
 	int idx = getUserIdx(fn, pass);
 	if (idx == -1)
-		throw std::invalid_argument("No such user exists");
+		throw std::exception("No such user exists");
 	_currentU = &_users[idx];
 }
 void SocialNetwork::logout()
@@ -82,7 +82,7 @@ void SocialNetwork::open(const MyString& title)
 
 	int index = getTopicIdx(title);
 	if (index == -1)
-		throw std::invalid_argument("No such topic exists");
+		throw std::exception("No such topic exists");
 
 	_currentT = &_topics[index];
 	std::cout << "Welcome to " << _topics[index].getTitle() << '!' << std::endl;
@@ -94,7 +94,7 @@ void SocialNetwork::open(unsigned idx)
 
 	int index = getTopicIdx(idx);
 	if (index == -1)
-		throw std::invalid_argument("No such topic exists");
+		throw std::exception("No such topic exists");
 
 	_currentT = &_topics[index];
 	std::cout << "Welcome to " << _topics[index].getTitle() << '!' << std::endl;
@@ -212,7 +212,6 @@ void SocialNetwork::exit()
 	_currentT = nullptr;
 	_currentU = nullptr;
 
-	writeToFile();
 }
 
 void SocialNetwork::whoami() const
@@ -274,4 +273,8 @@ void SocialNetwork::readFromFiLe()
 
 	ifs.clear();
 	ifs.close();
+}
+SocialNetwork::~SocialNetwork()
+{
+	writeToFile();
 }
